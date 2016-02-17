@@ -7,12 +7,12 @@ copas <- function(x,
                   slope=NULL,
                   left=NULL,
                   rho.bound=0.9999,
+                  sign.rsb=0.1,
                   backtransf=x$backtransf,
                   silent=TRUE,
                   warn=options()$warn){
   
-  if (!inherits(x, "meta"))
-    stop("Argument 'x' must be an object of class \"meta\"")
+  meta:::chkclass(x, "meta")
   
   if (!is.numeric(rho.bound) && (rho.bound<=0|rho.bound>1))
     stop("no valid value for 'rho.bound'")
@@ -26,6 +26,11 @@ copas <- function(x,
       slope <- slope[1]
     }
   }
+  
+  
+  ## Check significance level for test of residual selection bias
+  ##
+  meta:::chklevel(sign.rsb)
   
   
   oldopt <- options(warn=warn)
@@ -471,6 +476,7 @@ copas <- function(x,
               ##
               publprob=publprob,
               pval.rsb=pval.rsb,
+              sign.rsb=sign.rsb,
               N.unpubl=N.unpubl,
               sm=x$sm, call=match.call(), x=x)
   

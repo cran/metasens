@@ -1,7 +1,6 @@
-summary.copas <- function(object, level=0.95, sign.rsb=0.1, ...){
+summary.copas <- function(object, level=0.95, sign.rsb=object$sign.rsb, ...){
   
-  if (!inherits(object, "copas"))
-    stop("Argument 'object' must be an object of class \"copas\"")
+  meta:::chkclass(object, "copas")
   
   seTE <- object$seTE
   TE.random <- object$TE.random
@@ -15,6 +14,12 @@ summary.copas <- function(object, level=0.95, sign.rsb=0.1, ...){
   N.unpubl <- object$N.unpubl
   ##
   ci.random <- ci(TE.random, seTE.random, level)
+  ##
+  if (is.null(sign.rsb))
+    sign.rsb <- 0.1
+  else
+    meta:::chklevel(sign.rsb)
+  
   
   ci.lab <- paste(round(100*level, 1), "%-CI", sep="")
   

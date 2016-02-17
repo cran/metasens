@@ -4,8 +4,7 @@ print.orbbound <- function(x,
                            digits=max(3, .Options$digits - 3),
                            ...){
   
-  if (!inherits(x, "orbbound"))
-    stop("Argument 'x' must be an object of class \"orbbound\"")
+  meta:::chkclass(x, "orbbound")
   
   k <- x$x$k
   k.suspect <- x$k.suspect
@@ -131,11 +130,11 @@ print.orbbound <- function(x,
     zlab <- "z"
     
     names(res) <- c("k.suspect", "maxbias",
-                    sm.lab, ci.lab, zlab, "p.value")
+                    sm.lab, ci.lab, zlab, "p-value")
     
     dimnames(res) <- list(rep("", length(k.suspect)),
                           c("k.suspect", "maxbias",
-                            sm.lab, ci.lab, zlab, "p.value"))
+                            sm.lab, ci.lab, zlab, "p-value"))
     
     prmatrix(res, quote=FALSE, right=TRUE)
   }
@@ -154,11 +153,11 @@ print.orbbound <- function(x,
     zlab <- "z"
     
     names(res) <- c("k.suspect", "maxbias",
-                    sm.lab, ci.lab, zlab, "p.value")
+                    sm.lab, ci.lab, zlab, "p-value")
     
     dimnames(res) <- list(rep("", length(k.suspect)),
                           c("k.suspect", "maxbias",
-                            sm.lab, ci.lab, zlab, "p.value"))
+                            sm.lab, ci.lab, zlab, "p-value"))
     
     prmatrix(res, quote=FALSE, right=TRUE)
   }

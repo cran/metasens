@@ -1,20 +1,19 @@
 limitmeta <- function(x,
                       method.adjust="beta0",
-                      sm=x$sm,
                       level=x$level, level.comb=x$level.comb,
                       backtransf=x$backtransf,
                       title=x$title, complab=x$complab, outclab=x$outclab){
   
-  if (!inherits(x, "meta"))
-    stop("Argument 'x' must be an object of class \"meta\"")
+  meta:::chkclass(x, "meta")
   
-
+  
   TE <- x$TE
   seTE <- x$seTE
   tau <- x$tau
   w.random <- x$w.random
   k <- x$k
   Q <- x$Q
+  sm <- x$sm
   ##
   seTE.tau  <- sqrt(1/w.random)
   ##
@@ -96,6 +95,11 @@ limitmeta <- function(x,
   upper.adjust <- ci.adjust$upper
   zval.adjust <- ci.adjust$z
   pval.adjust <- ci.adjust$p
+  ##
+  if (inherits(x, c("metaprop"))){
+    zval.adjust <- NA
+    pval.adjust <- NA
+  }
   
   
   ##
