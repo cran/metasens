@@ -1,7 +1,7 @@
 94d55d512a9ba36caa9b7df079bae19f *COPYING
-6fd7731483672763752320923d5dba34 *DESCRIPTION
+544385c8b42503bc0f8f78247a6c6353 *DESCRIPTION
 dfdd9caffba9f7dadf4e0b39c537d03b *NAMESPACE
-dab72cea8321fef16463f7dcc30fa75c *NEWS
+13b0e00a83e5610c161329f6f0d9612f *NEWS
 264be2575c251053c2cc7a7d870e0c62 *R/copas.R
 5273b5291299d97136f67b7c50fc7320 *R/copas.gradient.without.beta.R
 9b3e9fb21eb16ff4287e47b94d503c5d *R/copas.loglik.with.beta.R
@@ -12,7 +12,7 @@ b27c9ee0317e50257fd37bf67fffd9c8 *R/copas.loglik.without.beta.R
 d67d0ac14ccf09a89f4317ccfd7f2efb *R/limitmeta.R
 3466e61b7c414e9ab6939150dfa3b497 *R/metasens-interal.R
 9e9e33cbb262479f051c969f54b3bf36 *R/orbbound.R
-a85f1989d29dcc9deace072de9565ce2 *R/plot.copas.R
+3a8ad099174f2a5ccddbcc059c6dc57a *R/plot.copas.R
 f68449f4002400070715dd7c201a168e *R/print.copas.R
 c5e751d7c9194d0bd7797f15cac353dd *R/print.limitmeta.R
 42351ab23e16d18cbf73e6402579159a *R/print.orbbound.R
@@ -24,13 +24,14 @@ b3c0550b34c8ae4709165b8ddacec43b *R/summary.limitmeta.R
 ee7c8d93aca109fe9f2702245e04ec64 *data/Crowther2003.txt.gz
 bd9e12eecef032bad98d0686096afeff *data/nsaids.txt.gz
 d7b62df86743f5ad7390094b8be04a2e *man/Crowther2003.Rd
-e61ef5a437e1228442d855b91f75204c *man/copas.Rd
+88c64b96e80ab366aacd98a66c5e3b12 *man/copas.Rd
 d765cb71d5138067984c7681a8dac4b7 *man/forest.orbbound.Rd
 0661194994a81ee2fda4f6230456384a *man/funnel.limitmeta.Rd
-cf92b6d9c9fb734dff1d04891d17aa40 *man/limitmeta.Rd
+c8804de79aa870c3e985f73a5a11a2e1 *man/limitmeta.Rd
+6ffec563ac4ad75d51b46c650b814a43 *man/metasens-package.Rd
 093c710f3c96d8f7af231b12c8ef8138 *man/nsaids.Rd
-bbbe90cd38574c9e79d2ea5f33b33ef1 *man/orbbound.Rd
-5250eba9f647d480903605ebe7654460 *man/plot.copas.Rd
+6bf995693a5f01f3776008ab78416e22 *man/orbbound.Rd
+3f9c9c13146e0b59c6a700d745832b11 *man/plot.copas.Rd
 bc04b69c942f9ae000803b67c96c7104 *man/print.copas.Rd
 a64f2ee8338022f2e4f43cb52e391801 *man/print.limitmeta.Rd
 4a627f4f78c57cc1450eb18c52fdad8e *man/print.orbbound.Rd
