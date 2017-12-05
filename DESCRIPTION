@@ -1,12 +1,12 @@
 Package: metasens
 Title: Advanced Statistical Methods to Model and Adjust for Bias in
         Meta-Analysis
-Version: 0.3-1
+Version: 0.3-2
 Authors@R: c(person("Guido","Schwarzer", email="sc@imbi.uni-freiburg.de", role=c("aut","cre")),
-    person("James","Carpenter", role="aut"),
+    person("James R.","Carpenter", role="aut"),
     person("Gerta","Rücker", role="aut"))
-Depends: meta (>= 4.0-0)
-Date: 2016-10-15
+Depends: meta (>= 4.9-0)
+Date: 2017-12-06
 URL: https://github.com/guido-s/metasens
         http://meta-analysis-with-r.org
 Description: The following methods are implemented to evaluate how sensitive the results of a meta-analysis are to potential bias in meta-analysis and to support Schwarzer et al. (2015) <DOI:10.1007/978-3-319-21416-0>, Chapter 5 "Small-Study Effects in Meta-Analysis":
@@ -16,10 +16,10 @@ Description: The following methods are implemented to evaluate how sensitive the
 License: GPL (>= 2)
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2016-10-15 15:11:54 UTC; sc
+Packaged: 2017-12-05 23:33:37 UTC; sc
 Author: Guido Schwarzer [aut, cre],
-  James Carpenter [aut],
+  James R. Carpenter [aut],
   Gerta Rücker [aut]
 Maintainer: Guido Schwarzer <sc@imbi.uni-freiburg.de>
 Repository: CRAN
-Date/Publication: 2016-10-15 18:52:03
+Date/Publication: 2017-12-06 00:03:47 UTC

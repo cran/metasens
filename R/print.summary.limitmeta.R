@@ -1,147 +1,260 @@
 print.summary.limitmeta <- function(x,
                                     backtransf = x$backtransf,
-                                    digits = max(3, .Options$digits - 3),
-                                    header = TRUE, ...){
+                                    digits = gs("digits"),
+                                    header = TRUE,
+                                    pscale = x$x$pscale,
+                                    irscale = x$x$irscale,
+                                    irunit = x$x$irunit,
+                                    digits.zval = gs("digits.zval"),
+                                    digits.pval = gs("digits.pval"),
+                                    digits.Q = gs("digits.Q"),
+                                    digits.tau2 = gs("digits.tau2"),
+                                    digits.I2 = gs("digits.I2"),
+                                    scientific.pval = gs("scientific.pval"),
+                                    big.mark = gs("big.mark"),
+                                    print.Rb = gs("print.Rb"),
+                                    warn.backtransf = FALSE,
+                                    ...) {
   
+  
+  ##
+  ##
+  ## (1) Check for summary.limitmeta object
+  ##
+  ##
   meta:::chkclass(x, "summary.limitmeta")
+  ##
+  chklogical <- meta:::chklogical
+  chknumeric <- meta:::chknumeric
+  formatN <- meta:::formatN
+  formatPT <- meta:::formatPT
+  formatCI <- meta:::formatCI
   
   
-  sm <- x$sm
-  
-  
+  ##
+  ##
+  ## (2) Check and set other arguments
+  ##
+  ##
+  chknumeric(digits, min = 0, single = TRUE)
+  chknumeric(digits.tau2, min = 0, single = TRUE)
+  chknumeric(digits.zval, min = 0, single = TRUE)
+  chknumeric(digits.pval, min = 1, single = TRUE)
+  chknumeric(digits.Q, min = 0, single = TRUE)
+  chknumeric(digits.I2, min = 0, single = TRUE)
+  chklogical(backtransf)
+  chklogical(scientific.pval)
+  chklogical(print.Rb)
+  chklogical(warn.backtransf)
+  ##
+  is.prop <- meta:::is.prop(x$sm)
+  is.rate <- meta:::is.rate(x$sm)
+  ##
+  if (!is.prop)
+    pscale <- 1
+  if (!is.null(pscale))
+    chknumeric(pscale, single = TRUE)
+  else
+    pscale <- 1
+  if (!backtransf & pscale != 1) {
+    warning("Argument 'pscale' set to 1 as argument 'backtransf' is FALSE.")
+    pscale <- 1
+  }
+  if (!is.rate)
+    irscale <- 1
+  if (!is.null(irscale))
+    chknumeric(irscale, single = TRUE)
+  else
+    irscale <- 1
+  if (!backtransf & irscale != 1) {
+    warning("Argument 'irscale' set to 1 as argument 'backtransf' is FALSE.")
+    irscale <- 1
+  }
+  ##
+  ## Additional arguments / checks for metacont objects
+  ##
   cl <- class(x)[1]
   addargs <- names(list(...))
   ##
   fun <- "print.summary.limitmeta"
   ##
   meta:::warnarg("logscale", addargs, fun, otherarg = "backtransf")
+  
+  
   ##
-  if (is.null(backtransf))
-    if (!is.null(list(...)[["logscale"]]))
-      backtransf <- !list(...)[["logscale"]]
-    else
-      backtransf <- TRUE
-  
-  
+  ##
+  ## (3) Some additional settings
+  ##
+  ##
+  ci.lab <- paste(round(100 * x$level.comb, 1), "%-CI", sep = "")
+  ##  
+  k <- x$k
+  sm <- x$sm
+  ##
+  if (is.null(x$df.Q))
+    df.Q <- k - 1
+  else
+    df.Q <- x$df.Q
+  ##
   sm.lab <- sm
   ##
-  if (backtransf){
+  if (backtransf) {
     if (sm == "ZCOR")
       sm.lab <- "COR"
-    if (sm %in% c("PFT", "PAS", "PRAW", "PLOGIT", "PLN"))
-      sm.lab <- "proportion"
+    else if (is.prop) {
+      if (pscale == 1)
+        sm.lab <- "proportion"
+      else
+        sm.lab <- "events"
+    }
+    else if (is.rate) {
+      if (irscale == 1)
+        sm.lab <- "rate"
+      else
+        sm.lab <- "events"
+    }
   }
-  else 
+  else
     if (meta:::is.relative.effect(sm))
       sm.lab <- paste("log", sm, sep = "")
   
   
+  ##
+  ##
+  ## (4) Set and backtransform results of meta-analysis
+  ##
+  ##
   TEs <- c(x$TE.adjust, x$TE.random)
   lower <- c(x$lower.adjust, x$lower.random)
   upper <- c(x$upper.adjust, x$upper.random)
-
-
-  if (backtransf){
-    ##
-    npft.ma <- 1 / mean(1 / x$x$n)
+  ##
+  if (backtransf) {
+    if (inherits(x$x, "metarate"))
+      harmonic.mean <- 1 / mean(1 / x$x$time)
+    else
+      harmonic.mean <- 1 / mean(1 / x$x$n)
     ##
     TEs   <- meta:::backtransf(TEs, sm, "mean",
-                               npft.ma, warn = TRUE)
+                               harmonic.mean, warn = warn.backtransf)
     lower <- meta:::backtransf(lower, sm, "lower",
-                               npft.ma, warn = TRUE)
+                               harmonic.mean, warn = warn.backtransf)
     upper <- meta:::backtransf(upper, sm, "upper",
-                               npft.ma, warn = TRUE)
+                               harmonic.mean, warn = warn.backtransf)
   }
+  ##
+  ## Apply argument 'pscale' to proportions and 'irscale' to rates
+  ##
+  if (is.prop | is.rate) {
+    if (is.prop)
+      scale <- pscale
+    else if (is.rate)
+      scale <- irscale
+    ##
+    TEs    <- scale * TEs
+    lower <- scale * lower
+    upper <- scale * upper
+  }
+  ##
+  ## Round and round ...
   ##
   TEs   <- round(TEs, digits)
   lower <- round(lower, digits)
   upper <- round(upper, digits)
   ##
-  TEs   <- format(TEs, trim = TRUE)
-  lower <- format(lower, trim = TRUE)
-  upper <- format(upper, trim = TRUE)
-  ##
   pvals <- c(x$pval.adjust, x$pval.random)
-  zvals <- format(round(c(x$zval.adjust, x$zval.random), digits))
-  
-  
-  imeth <- charmatch(tolower(x$method.adjust),
-                     c("beta0", "betalim", "mulim"), nomatch = NA)
+  zvals <- round(c(x$zval.adjust, x$zval.random), digits.zval)
   ##
-  if(is.na(imeth))
-    stop("Argument 'method.adjust' should be \"beta0\", \"betalim\", or \"mulim\"")
+  I2 <- round(100 * x$x$I2, digits.I2)
+  lowI2 <- round(100 * x$x$lower.I2, digits.I2)
+  uppI2 <- round(100 * x$x$upper.I2, digits.I2)
   ##
-  method.adjust.detail <- c("- expectation (beta0)",
-                            "- including bias parameter (beta-lim)",
-                            "- excluding bias parameter (mu-lim)")[imeth]
+  Rb <- round(100 * x$x$Rb, digits.I2)
+  lowRb <- round(100 * x$x$lower.Rb, digits.I2)
+  uppRb <- round(100 * x$x$upper.Rb, digits.I2)
+  ##
+  G2 <- round(100 * x$G.squared, digits.I2)
   
   
-  ci.lab <- paste(round(100 * x$level.comb, 1),
-                  "%-CI", sep="")
-  
-  
+  ##
+  ##
+  ## (5) Print result for meta-analysis
+  ##
+  ##
+  if (header)
+    meta:::crtitle(x)
+  ##
   res <- cbind(c("Adjusted estimate",
                  "Unadjusted estimate"),
-               ifelse(TEs == "NA", "", TEs),
-               meta:::p.ci(lower, upper),
-               zvals,
-               meta:::format.p(pvals)
+               formatN(TEs, digits, "NA", big.mark = big.mark),
+               formatCI(formatN(lower, digits, "NA", big.mark = big.mark),
+                        formatN(upper, digits, "NA", big.mark = big.mark)),
+               formatN(zvals, digits.zval, big.mark = big.mark),
+               formatPT(pvals, digits = digits.pval,
+                        scientific = scientific.pval)
                )
   ##
   dimnames(res) <- list(rep("", dim(res)[[1]]),
                         c("Random effects model",
                           sm.lab, ci.lab, "z", "pval"))
-  
-  
-  if (header)
-    meta:::crtitle(x)
-  
-  
+  ##
   cat("Result of limit meta-analysis:\n\n")
   ##
   prmatrix(res, quote = FALSE, right = TRUE)
-  
-  
-  if (!is.na(x$tau)){
-    ##
-    I2res <- meta:::isquared(x$Q, x$k - 1, x$x$level.comb)
-    I2 <- I2res$TE
-    lowI2 <- I2res$lower
-    uppI2 <- I2res$upper
+  ##  
+  if (!is.na(x$tau)) {
     ##
     cat(paste("\nQuantifying heterogeneity:\n",
-              if (x$tau^2 > 0 & x$tau^2 < 0.0001)
-              "tau^2 < 0.0001"
-              else
-              paste("tau^2 = ",
-                    ifelse(x$tau == 0,
-                           "0",
-                           format(round(x$tau^2, 4), 4, nsmall = 4, scientific = FALSE)),
-                    sep="")
-              ,
-              paste("; I^2 = ", round(100 * I2, 1), "%",
-                    ifelse(x$k > 2,
+              ##
+              formatPT(x$tau^2,
+                       lab = TRUE, labval = gs("text.tau2"),
+                       digits = digits.tau2,
+                       big.mark = big.mark,
+                       lab.NA = "NA"),
+              ##
+              paste("; ",
+                    "I^2 = ",
+                    if (is.nan(I2)) "NA" else paste(formatN(I2, digits.I2),
+                                                    "%", sep = ""),
+                    ifelse(k > 2 & !(is.na(lowI2) | is.na(uppI2)),
                            paste(" ",
-                                 meta:::p.ci(paste(round(100 * lowI2, 1), "%", sep = ""),
-                                             paste(round(100 * uppI2, 1), "%", sep = "")),
+                                 formatCI(paste(formatN(lowI2, digits.I2),
+                                                "%", sep = ""),
+                                          paste(formatN(uppI2, digits.I2),
+                                                "%", sep = "")),
                                  sep = ""),
                            ""),
-                    "; G^2 = ", round(100 * x$G.squared, 1), "%",
+                    "; ",
+                    "G^2 = ",
+                    if (is.nan(G2)) "NA" else paste(formatN(G2, digits.I2),
+                                                    "%", sep = ""),
                     sep = ""),
+              if (print.Rb)
+                paste(";\n ",
+                      "Rb = ",
+                      if (is.nan(Rb)) "NA" else paste(formatN(Rb, digits.I2),
+                                                      "%", sep = ""),
+                      ifelse(k > 2 & !(is.na(lowRb) | is.na(uppRb)),
+                             paste(" ",
+                                   formatCI(paste(formatN(lowRb, digits.I2),
+                                                  "%", sep = ""),
+                                            paste(formatN(uppRb, digits.I2),
+                                                  "%", sep = "")),
+                                   sep = ""),
+                             ""),
+                      sep = ""),
               "\n", sep = ""))
   }
-  
   
   Qd <- function(Q, df)
     data.frame(Q = round(Q, 2), df = df,
                p = 1 - pchisq(Q, df = df))
   ##
-  Qds <- rbind(Qd(x$Q, x$k - 1),
+  Qds <- rbind(Qd(x$Q, k - 1),
                Qd(x$Q.small, 1),
-               Qd(x$Q.resid, x$k - 2))
+               Qd(x$Q.resid, k - 2))
   Qds$Q  <- format(Qds$Q)
   Qds$df <- format(Qds$df)
-  Qds$p  <- meta:::format.p(Qds$p)
+  Qds$p  <- formatPT(Qds$p, digits = digits.pval, scientific = scientific.pval)
   ##
   Qd1 <- Qds[1, ]
   Qd2 <- Qds[2, ]
@@ -158,6 +271,17 @@ print.summary.limitmeta <- function(x,
   dimnames(Qd3) <- list("", c("Q'", "d.f.", "p-value"))
   cat("\nTest of residual heterogeneity beyond small-study effects:\n")
   prmatrix(Qd3, quote = FALSE, right = TRUE, ...)
+  
+  
+  imeth <- charmatch(tolower(x$method.adjust),
+                     c("beta0", "betalim", "mulim"), nomatch = NA)
+  ##
+  if(is.na(imeth))
+    stop("Argument 'method.adjust' should be \"beta0\", \"betalim\", or \"mulim\"")
+  ##
+  method.adjust.detail <- c("- expectation (beta0)",
+                            "- including bias parameter (beta-lim)",
+                            "- excluding bias parameter (mu-lim)")[imeth]
   ##
   cat("\nDetails on adjustment method:\n",
       method.adjust.detail,
