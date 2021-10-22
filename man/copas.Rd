@@ -6,7 +6,7 @@
 \usage{
 copas(
   x,
-  level.comb = x$level.comb,
+  level.ma = x$level.ma,
   gamma0.range = NULL,
   gamma1.range = NULL,
   ngrid = 20,
@@ -29,7 +29,7 @@ copas(
 functions \code{metabin}, \code{metacont} and \code{metagen} in
 the package meta.}
 
-\item{level.comb}{The level used to calculate confidence intervals
+\item{level.ma}{The level used to calculate confidence intervals
 for pooled estimates.}
 
 \item{gamma0.range}{(Advanced users only) A numerical vector of
@@ -331,13 +331,13 @@ data(Fleiss1993bin, package = "meta")
 #        d.plac indicates deaths, n.plac total in placebo group)
 #
 m1 <- metabin(d.asp, n.asp, d.plac, n.plac, data = Fleiss1993bin, sm = "OR")
-summary(m1)
+m1
 
 # Perform a basic Copas selection model analysis
 #
 cop1 <- copas(m1)
 plot(cop1)
-summary(cop1)
+cop1
 #
 # Interpretation: 
 #
@@ -393,7 +393,7 @@ plot(cop2)
 #
 # Print table of results used to draw treatment effect plot:
 #
-summary(cop2)
+cop2
 }
 \references{
 Carpenter JR, Schwarzer G, Rücker G, Künstler R (2009):
