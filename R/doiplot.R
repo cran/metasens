@@ -3,10 +3,10 @@
 #' Implementation of the Doi plot proposed by Furuya-Kanamori
 #' et al. (2018) to evaluate bias in meta-analysis.
 #' 
-#' @param TE An object of class \code{lfkindex} or estimated treatment
-#'   effect in individual studies.
+#' @param TE An object of class \code{lfkindex} or \code{meta} or
+#'   estimated treatment effect in individual studies.
 #' @param seTE Standard error of estimated treatment effect (mandatory
-#'   if \code{TE} not of class \code{meta}).
+#'   if \code{TE} not of class \code{lfkindex} or \code{meta}).
 #' @param xlim The x limits (min,max) of the plot.
 #' @param ylim The y limits (min,max) of the plot.
 #' @param xlab A label for the x-axis.
@@ -25,7 +25,6 @@
 #'   \code{\link{funnel.meta}}
 #' 
 #' @references
-#' 
 #' Furuya-Kanamori L, Barendregt JJ, Doi SAR (2018):
 #' A new improved graphical and quantitative method for detecting bias
 #' in meta-analysis.
@@ -49,17 +48,28 @@
 
 
 doiplot <- function(TE, seTE, xlim, ylim,
-                    xlab = "ES", ylab = "|Z-score|",
+                    xlab = NULL, ylab = "|Z-score|",
                     lfkindex = TRUE, pos.lfkindex = "topleft",
                     ...) {
   
   
-  if (!inherits(TE, "lfkindex"))
-    lfk <- lfkindex(TE, seTE)
+  if (!inherits(TE, "lfkindex")) {
+    if (missing(seTE))
+      lfk <- lfkindex(TE)
+    else
+      lfk <- lfkindex(TE, seTE)
+  }
   else
     lfk <- TE
   ##
+  if (missing(xlab)) {
+    if (!is.null(lfk$x))
+      xlab <- xlab(lfk$x$sm, FALSE)
+    else
+      xlab <- "ES"
+  }
   chkchar(xlab, length = 1)
+  ##
   chkchar(ylab, length = 1)
   chklogical(lfkindex)
   pos.lfkindex <-
@@ -76,10 +86,10 @@ doiplot <- function(TE, seTE, xlim, ylim,
   
   
   plot(lfk$TE, lfk$abs.zscore, type = "b",
-       ylim = ylim, xlab = xlab, ylab = ylab,
+       xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab,
        ...)
   ##
-  if (lfkindex != "")
+  if (lfkindex)
     legend(pos.lfkindex,
            paste("LFK index", round(lfk$lfkindex, 2)))
   
